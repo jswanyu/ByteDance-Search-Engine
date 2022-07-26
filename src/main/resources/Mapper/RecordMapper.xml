@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定对应的Dao接口-->
+<mapper namespace="com.wanyu.searchengine.dao.RecordDao">
+    <!--返回类型-->
+    <resultMap id="RecordMap" type="com.wanyu.searchengine.entity.Record">
+        <id column="id" property="id"></id>
+        <result column="url" property="url"></result>
+        <result column="caption" property="caption"></result>
+    </resultMap>
+
+    <select id="selectPartialRecords" resultType="com.wanyu.searchengine.entity.Record">
+        select * from data limit #{limit} offset #{offset}
+    </select>
+
+</mapper>

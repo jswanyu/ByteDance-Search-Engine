@@ -1,0 +1,28 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: search_engine
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/search-engine?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 12
+  web:
+    resources:
+      static-locations: D:/codework/Java/IDEA/Other/ByteDance_Search_Engine_upload
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 123321
+    lettuce:
+      pool:
+        max-active: 100
+        max-idle: 10
+        min-idle: 1
+        time-between-eviction-runs: 10s
+    database: 2
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.wanyu.entity
+

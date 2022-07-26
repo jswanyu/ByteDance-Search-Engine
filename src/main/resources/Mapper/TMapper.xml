@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--绑定对应Dao接口-->
+<mapper namespace="com.wanyu.searchengine.dao.TDao">
+    <insert id="insert1" parameterType="list">
+        insert into segmentation(word)
+        values
+        <foreach collection="segs" item="item" separator=",">
+            (#{item})
+        </foreach>
+    </insert>
+
+    <insert id="insert2" parameterType="list" statementType="STATEMENT">
+        insert into ${tableName}(data_id, seg_id, tidif_value, count)
+        values
+        <foreach collection="relations" item="item" separator=",">
+            (
+            ${item.dataId},
+            ${item.segId},
+            ${item.tidif},
+            ${item.count}
+            )
+        </foreach>
+    </insert>
+
+    <update id="createNewTable" parameterType="String">
+        CREATE TABLE if not exists ${tableName} (
+            `data_id` int NOT NULL,
+            `seg_id` int NOT NULL,
+            `tidif_value` double NULL DEFAULT NULL,
+            `count` int NULL DEFAULT NULL,
+            INDEX `index`(`seg_id`) USING BTREE
+            )
+    </update>
+
+    <select id="getRecordUseSplitFilter" resultType="com.wanyu.searchengine.dto.Record">
+        select url, caption from data where id in (
+            select tb3.data_id from (
+                select data_id from (${info}) tb1 where not exists (
+                    select * from (${filterInfo}) tb2 where tb1.data_id = tb2.data_id
+                )
+                group by data_id
+                order by sum(tidif_value) desc limit ${pageSize} offset ${offset}
+            ) tb3
+        )
+    </select>
+
+    <select id="getRecordsNumFilter" resultType="java.lang.Integer">
+        select count(data_id) from (${info}) tb1
+        where not exists (
+            select * from (${filterInfo}) tb2 where tb1.data_id = tb2.data_id
+            )
+    </select>
+
+    <select id="getRecordUseSplit" resultType="com.wanyu.searchengine.dto.Record">
+        select url, caption from data where id in (
+            select tb2.data_id from (
+                select data_id from (${info}) tb1
+                group by data_id
+                order by sum(tidif_value) desc limit ${pageSize} offset ${offset}
+            ) tb2
+        )
+    </select>
+
+    <select id="getRecordsNum" resultType="java.lang.Integer">
+        select count(data_id) from (${info}) tb1
+    </select>
+
+</mapper>
